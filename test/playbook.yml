@@ -5,3 +5,6 @@
     - rukomoynikov.setup_docker_based_server
   roles:
     - docker
+    - swarm
+    - portainer
+    - postgres

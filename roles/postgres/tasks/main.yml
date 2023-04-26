@@ -1,21 +1,36 @@
 ---
 
+- name: Find if Postgres is already installed
+  shell: docker service ls | grep postgres
+  register: postgres_installed
+  ignore_errors: yes
+
+- name: Set postgres credentials to secrets
+  when: postgres_installed.stdout == ""
+  shell: |
+    printf "{{database.password}}" | docker secret create postgres_password -
+    printf "{{database.user}}" | docker secret create postgres_user -
+  ignore_errors: yes
+
 - name: Create a directory if it does not exist
+  when: postgres_installed.stdout == ""
   file:
     path: /mnt/postgres
     mode: u+rw,g+wx,o+rwx
     state: directory
+
 - name: Install jsondiff package
+  when: postgres_installed.stdout == ""
   pip:
     name: jsondiff
     state: present
+
 - name: Copy Postgres stack file
+  when: postgres_installed.stdout == ""
   template:
-    src: "{{inventory_dir}}/setup/stacks/postgres_stack.yml"
+    src: "stack.yml"
     dest: /tmp/postgres_stack.yml
+
 - name: Deploy stack from a compose file
-  docker_stack:
-    state: present
-    name: postgres
-    compose:
-      - "/tmp/postgres_stack.yml"
+  when: postgres_installed.stdout == ""
+  shell: docker stack deploy -c /tmp/postgres_stack.yml postgres

@@ -1,6 +1,15 @@
 ---
 
+- name: Check if Docker Swarm is already initialized
+  shell: docker info --format {% raw %} '{{json .Swarm.LocalNodeState}}' {% endraw %}
+  register: swarm_initialized
+  ignore_errors: yes
+
+- debug:
+    msg: "Swarm is {{swarm_initialized.stdout}}"
+
 - name: Install required system packages
+  when: swarm_initialized.stdout == "inactive"
   apt:
     pkg:
       - apt-transport-https
@@ -10,9 +19,13 @@
       - python3-setuptools
     state: latest
     update_cache: true
+
 - name: Get local IP address (public one)
+  when: swarm_initialized.stdout == "inactive"
   shell: ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1 | tail -n 1
   register: local_ip
+
 - name: Init a new swarm with default parameters
+  when: swarm_initialized.stdout == "inactive"
   shell: |
-    docker swarm init --addvertise-address={{local_ip.stdout}}
+    docker swarm init --advertise-addr={{local_ip.stdout}}

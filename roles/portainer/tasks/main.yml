@@ -1,6 +1,17 @@
 ---
 
+- name: Find if Portainer is already installed
+  shell: docker service ls | grep portainer
+  register: portainer_installed
+  ignore_errors: yes
+
+- debug:
+    msg: "Portainer is already installed."
+  when: portainer_installed.rc == 0
+
 - name: Set Portainer services
+  when: portainer_installed.rc == 0
   shell: curl -L https://downloads.portainer.io/ce2-17/portainer-agent-stack.yml | docker stack deploy --compose-file - portainer
+
 - debug:
     msg: "Portainer is available at https://{{ansible_host}}:9443. Don't forget to change the default password."

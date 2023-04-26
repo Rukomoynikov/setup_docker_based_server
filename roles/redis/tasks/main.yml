@@ -1,0 +1,21 @@
+---
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /mnt/redis
+    mode: u+rw,g+wx,o+rwx
+    state: directory
+- name: Install jsondiff package
+  ansible.builtin.pip:
+    name: jsondiff
+    state: present
+- name: Copy redis stack file
+  ansible.builtin.template:
+    src: "{{inventory_dir}}/setup/stacks/redis_stack.yml"
+    dest: /tmp/redis_stack.yml
+- name: Deploy stack from a compose file
+  docker_stack:
+    state: present
+    name: redis
+    compose:
+      - "/tmp/redis_stack.yml"

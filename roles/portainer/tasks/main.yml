@@ -1,0 +1,6 @@
+---
+
+- name: Set Portainer services
+  shell: curl -L https://downloads.portainer.io/ce2-17/portainer-agent-stack.yml | docker stack deploy --compose-file - portainer
+- debug:
+    msg: "Portainer is available at https://{{ansible_host}}:9443. Don't forget to change the default password."

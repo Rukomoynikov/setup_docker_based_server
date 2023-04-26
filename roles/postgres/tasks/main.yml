@@ -1,0 +1,21 @@
+---
+
+- name: Create a directory if it does not exist
+  file:
+    path: /mnt/postgres
+    mode: u+rw,g+wx,o+rwx
+    state: directory
+- name: Install jsondiff package
+  pip:
+    name: jsondiff
+    state: present
+- name: Copy Postgres stack file
+  template:
+    src: "{{inventory_dir}}/setup/stacks/postgres_stack.yml"
+    dest: /tmp/postgres_stack.yml
+- name: Deploy stack from a compose file
+  docker_stack:
+    state: present
+    name: postgres
+    compose:
+      - "/tmp/postgres_stack.yml"

@@ -1,0 +1,24 @@
+namespace: rukomoynikov
+name: setup_docker_based_server
+version: 1.0.0
+readme: README.md
+
+authors:
+- Max Rukomoynikov <rukomoynikov@gmail.com>
+
+description: Collections of ansible recipes to setup docker based server. It will install docker and set up several containers like Postgres, Traefif, Portainer, etc.
+
+license:
+- MIT
+
+tags:
+  - docker
+  - postgres
+  - traefik
+  - portainer
+
+dependencies: {}
+
+repository: https://github.com/Rukomoynikov/setup_docker_based_server
+
+build_ignore: []

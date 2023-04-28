@@ -1,21 +1,35 @@
 ---
 
+- name: Find if Redis is already installed
+  shell: docker service ls | grep redis
+  register: redis_installed
+  ignore_errors: yes
+
 - name: Create a directory if it does not exist
-  ansible.builtin.file:
+  when: redis_installed.stdout == ""
+  file:
     path: /mnt/redis
     mode: u+rw,g+wx,o+rwx
     state: directory
+
 - name: Install jsondiff package
-  ansible.builtin.pip:
+  when: redis_installed.stdout == ""
+  pip:
     name: jsondiff
     state: present
+
 - name: Copy redis stack file
-  ansible.builtin.template:
-    src: "{{inventory_dir}}/setup/stacks/redis_stack.yml"
+  when: redis_installed.stdout == ""
+  template:
+    src: "stack.yml"
     dest: /tmp/redis_stack.yml
+
 - name: Deploy stack from a compose file
-  docker_stack:
-    state: present
-    name: redis
-    compose:
-      - "/tmp/redis_stack.yml"
+  when: redis_installed.stdout == ""
+  shell: docker stack deploy -c /tmp/redis_stack.yml redis
+
+- name: Remove stack file
+  file:
+    path: /tmp/redis_stack.yml
+    state: absent
+

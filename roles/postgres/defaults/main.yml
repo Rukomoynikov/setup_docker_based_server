@@ -1,0 +1,4 @@
+---
+
+password: "{{ database.password | default('postgres1') }}"
+username: "{{ database.username | default('postgres_password1') }}"

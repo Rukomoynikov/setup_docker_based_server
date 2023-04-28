@@ -8,3 +8,4 @@
     - swarm
     - portainer
     - postgres
+    - redis

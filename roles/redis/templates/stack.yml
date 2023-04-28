@@ -4,9 +4,9 @@ services:
   redis-master:
     image: "bitnami/redis:latest"
     ports:
-      - "6379:6379"
+      - 6379:6379
     environment:
       - REDIS_REPLICATION_MODE=master
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - '/mnt/redis:/bitnami/redis/data'
+      - /mnt/redis:/bitnami

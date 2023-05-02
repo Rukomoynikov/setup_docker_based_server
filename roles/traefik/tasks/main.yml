@@ -1,27 +1,37 @@
 ---
 
+- name: Find if Traefik is already installed
+  shell: docker service ls | grep traefik
+  register: traefik_installed
+  ignore_errors: yes
+
 - name: Install jsondiff package
+  when: traefik_installed.stdout == ""
   ansible.builtin.pip:
     name: jsondiff
     state: present
 
-- name: Copy traefik stack file
-  ansible.builtin.template:
-    src: "{{inventory_dir}}/setup/stacks/traefik_stack.yml"
+- name: Copy Postgres stack file
+  when: traefik_installed.stdout == ""
+  template:
+    src: "stack.yml"
     dest: /tmp/traefik_stack.yml
 
 - name: Create traefik network
+  when: traefik_installed.stdout == ""
   docker_network:
     name: traefik-public
     driver: overlay
     state: present
 
 - name: Create a directory if it does not exist
-  ansible.builtin.file:
+  when: traefik_installed.stdout == ""
+  file:
     path: /mnt/data/traefik/
     state: directory
 
 - name: Change file ownership, group and permissions
+  when: traefik_installed.stdout == ""
   copy:
     content: ""
     dest: /mnt/data/traefik/acme.json
@@ -29,8 +39,10 @@
     mode: 0600
 
 - name: Deploy stack from a compose file
-  docker_stack:
-    state: present
-    name: traefik
-    compose:
-      - "/tmp/traefik_stack.yml"
+  when: traefik_installed.stdout == ""
+  shell: docker stack deploy -c /tmp/traefik_stack.yml traefik
+
+- name: Remove stack file
+  file:
+    path: /tmp/traefik_stack.yml
+    state: absent

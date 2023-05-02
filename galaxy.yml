@@ -6,7 +6,7 @@ readme: README.md
 authors:
 - Max Rukomoynikov <rukomoynikov@gmail.com>
 
-description: Collections of ansible recipes to setup docker based server. It will install docker and set up several containers like Postgres, Traefif, Portainer, etc.
+description: Collections of ansible recipes to setup docker based server. It will install docker and set up several containers like Postgres, Traefik, Portainer, etc.
 
 license:
 - MIT

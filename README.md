@@ -27,7 +27,7 @@ _It means all stuff like databases, web servers, etc. are running in docker cont
 **How to run:**
 Here is an example of inventory file in json format:
 
-```json
+```json lines
 {
   "all": {
     "hosts": {

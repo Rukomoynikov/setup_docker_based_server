@@ -15,7 +15,7 @@ services:
       - --api.dashboard=true
       - --certificatesresolvers.leresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory
       # update your email here
-      - --certificatesresolvers.leresolver.acme.email={{email_for_certs}}
+      - --certificatesresolvers.leresolver.acme.email={{traefik.email_for_letsencrypt}}
       # Make sure the this file is available and permission is set correctly
       - --certificatesresolvers.leresolver.acme.storage=/le/acme.json
       - --certificatesresolvers.leresolver.acme.tlschallenge=true
@@ -32,7 +32,7 @@ services:
         # Dashboard
         - "traefik.enable=true"
         # Change the host url here
-        - "traefik.http.routers.traefik.rule=Host(`traefik.codemetrics.dev`)"
+        - "traefik.http.routers.traefik.rule=Host(`{{traefik.host}}`)"
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.services.traefik.loadbalancer.server.port=8080"
         - "traefik.http.routers.traefik.tls.certresolver=leresolver"

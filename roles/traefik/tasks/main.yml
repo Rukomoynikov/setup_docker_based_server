@@ -4,25 +4,30 @@
   ansible.builtin.pip:
     name: jsondiff
     state: present
+
 - name: Copy traefik stack file
   ansible.builtin.template:
     src: "{{inventory_dir}}/setup/stacks/traefik_stack.yml"
     dest: /tmp/traefik_stack.yml
+
 - name: Create traefik network
   docker_network:
     name: traefik-public
     driver: overlay
     state: present
+
 - name: Create a directory if it does not exist
   ansible.builtin.file:
     path: /mnt/data/traefik/
     state: directory
+
 - name: Change file ownership, group and permissions
   copy:
     content: ""
     dest: /mnt/data/traefik/acme.json
     force: false
     mode: 0600
+
 - name: Deploy stack from a compose file
   docker_stack:
     state: present
